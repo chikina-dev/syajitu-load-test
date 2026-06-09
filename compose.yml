@@ -1,0 +1,91 @@
+x-common: &common
+  image: perl:5.40-slim
+  working_dir: /app
+  command: perl /app/index.pl
+
+x-low-limit: &low-limit
+  mem_limit: 32m
+  cpus: "0.10"
+  pids_limit: 16
+  ulimits:
+    nofile:
+      soft: 32
+      hard: 32
+
+x-memory-limit: &memory-limit
+  mem_limit: 160m
+  cpus: "0.10"
+  pids_limit: 16
+  ulimits:
+    nofile:
+      soft: 128
+      hard: 128
+
+services:
+  loadtest:
+    image: oven/bun:1.2.17
+    working_dir: /work
+    command: bun scripts/loadtest.ts
+    volumes:
+      - .:/work
+
+  server1:
+    <<: [*common, *low-limit]
+    container_name: server1
+    volumes:
+      - ./server1:/app:ro
+    ports:
+      - "8081:8080"
+
+  server2:
+    <<: [*common, *low-limit]
+    container_name: server2
+    volumes:
+      - ./server2:/app:ro
+    ports:
+      - "8082:8080"
+
+  server3:
+    <<: [*common, *memory-limit]
+    container_name: server3
+    volumes:
+      - ./server3:/app:ro
+    ports:
+      - "8083:8080"
+
+  server4:
+    <<: [*common, *low-limit]
+    container_name: server4
+    volumes:
+      - ./server4:/app:ro
+    ports:
+      - "8084:8080"
+
+  server5:
+    <<: [*common, *low-limit]
+    container_name: server5
+    volumes:
+      - ./server5:/app:ro
+    ports:
+      - "8085:8080"
+
+  server6:
+    <<: [*common, *low-limit]
+    container_name: server6
+    volumes:
+      - ./server6:/app:ro
+    ports:
+      - "8086:8080"
+
+  server7:
+    <<: [*common, *memory-limit]
+    container_name: server7
+    pids_limit: 24
+    ulimits:
+      nofile:
+        soft: 256
+        hard: 256
+    volumes:
+      - ./server7:/app:ro
+    ports:
+      - "8087:8080"
